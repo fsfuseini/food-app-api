@@ -5,9 +5,9 @@ import jwt from "jsonwebtoken";
 // REGISTER USER
 export const registerUser = async (req, res) => {
   try {
-    const { userName, email, password, address, phone } = req.body;
+    const { userName, email, password, address, phone, answer } = req.body;
     // Validation
-    if (!userName || !email || !password || !address || !phone) {
+    if (!userName || !email || !password || !address || !phone || !answer) {
       return res.status(400).json({ message: "All fields are required" });
     }
     // Check user already exists
@@ -26,6 +26,7 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
       address,
       phone,
+      answer,
     });
     res.status(201).send({
       success: true,
@@ -119,38 +120,123 @@ export const getUserInfo = async (req, res) => {
 
 // UPDATE USER INFO
 export const updateUserInfo = async (req, res) => {
-    try {
-        // Find user
-        const user = await UserModel.findById({ _id: req.body.id });
-        // Validation
-        if (!user) {
-            return res.status(404).send({
-                success: false,
-                message: "User not found",
-            });
-        }
-        // Update user
-        const { userName, address, phone } = req.body;
-        if (userName) {
-            user.userName = userName;
-        }
-        if (address) {
-            user.address = address;
-        }
-        if (phone) {
-            user.phone = phone;
-        }
-        await user.save();
-        res.status(200).send({
-            success: true,
-            message: "User info updated successfully",
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({
-            success: false,
-            message: "Error in updating user info",
-            error,
-        });
+  try {
+    // Find user
+    const user = await UserModel.findById({ _id: req.body.id });
+    // Validation
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
     }
+    // Update user
+    const { userName, address, phone } = req.body;
+    if (userName) {
+      user.userName = userName;
+    }
+    if (address) {
+      user.address = address;
+    }
+    if (phone) {
+      user.phone = phone;
+    }
+    await user.save();
+    res.status(200).send({
+      success: true,
+      message: "User info updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in updating user info",
+      error,
+    });
+  }
+};
+
+// RESET PASSWORD
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, answer, newPassword } = req.body;
+    // Validation
+    if (!email || !answer || !newPassword) {
+      return res.status(500).send({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+    // Check user exists
+    const user = await UserModel.findOne({ email, answer });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found or Incorrect answer",
+      });
+    }
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    // Update password
+    user.password = hashedPassword;
+    await user.save();
+    res.status(200).send({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in resetting password",
+      error,
+    });
+  }
+};
+
+// UPDATE PASSWORD
+export const updatePassword = async (req, res) => {
+  try {
+    // Find user
+    const user = await UserModel.findById({ _id: req.body.id });
+    // Validation
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+    // Get data from user
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return res.status(500).send({
+        success: false,
+        message: "Please provide Old or New Password",
+      });
+    }
+    // Check password
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid old password",
+      });
+      }
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      user.password = hashedPassword;
+      await user.save();
+      res.status(200).send({
+          success: true,
+          message: "Password Updated"
+      })
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in updating password",
+      error,
+    });
+  }
 };
