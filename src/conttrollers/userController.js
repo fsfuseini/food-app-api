@@ -222,20 +222,59 @@ export const updatePassword = async (req, res) => {
         success: false,
         message: "Invalid old password",
       });
-      }
-      const salt = bcrypt.genSaltSync(10);
-      const hashedPassword = await bcrypt.hash(newPassword, salt);
-      user.password = hashedPassword;
-      await user.save();
-      res.status(200).send({
-          success: true,
-          message: "Password Updated"
-      })
+    }
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    await user.save();
+    res.status(200).send({
+      success: true,
+      message: "Password Updated",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
       message: "Error in updating password",
+      error,
+    });
+  }
+};
+
+// DELETE USER
+
+export const deleteUser = async (req, res) => {
+  try {
+    await UserModel.findByIdAndDelete(req.params.id);
+    return res.status(200).send({
+      success: true,
+      message: "Your account has been deleted",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in deleting User",
+      error,
+    });
+  }
+};
+
+// LOGOUT USER
+export const logoutUser = async (req, res) => {
+  try {
+    // Remove token from cookies or headers
+    res.clearCookie("token");
+    res.header("Authorization", "");
+    res.status(200).send({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in logging out user",
       error,
     });
   }

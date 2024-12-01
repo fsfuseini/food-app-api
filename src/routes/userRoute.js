@@ -6,6 +6,8 @@ import {
   updateUserInfo,
   resetPassword,
   updatePassword,
+  deleteUser,
+  logoutUser,
 } from "../conttrollers/userController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
@@ -29,5 +31,11 @@ userRouter.post("/user/reset-password", authMiddleware, resetPassword);
 
 // Update Password - POST
 userRouter.post("/user/update-password", authMiddleware, updatePassword);
+
+// Delete User
+userRouter.delete("/user/delete/:id", authMiddleware, deleteUser);
+
+// Logout user
+userRouter.post("/user/logout", logoutUser);
 
 export default userRouter;
