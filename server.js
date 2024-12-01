@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "./src/config/db.js";
 import userRouter from "./src/routes/userRoute.js";
+import restaurantRouter from "./src/routes/restaurantRoute.js";
 
 // DB Connection
 connectDB();
@@ -20,6 +21,8 @@ app.get("/", (req, res) => {
     .send("<h1>Welcome to Belly Full! An API for Belly Full</h1>");
 });
 app.use(userRouter);
+app.use(restaurantRouter)
+
 // PORT - Parse the PORT as a number
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000; // parseInt also works
 

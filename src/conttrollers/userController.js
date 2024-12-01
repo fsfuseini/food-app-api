@@ -20,7 +20,7 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     // Create new user
-    const user = await UserModel.create({
+    await UserModel.create({
       userName,
       email,
       password: hashedPassword,
@@ -70,7 +70,7 @@ export const loginUser = async (req, res) => {
     }
     // Create token
     const token = jwt.sign({ id: user._id }, process.env.JWT_KEY, {
-      expiresIn: "1hr",
+      expiresIn: "24hr",
     });
     user.password = undefined;
     res.status(200).send({
