@@ -4,6 +4,7 @@ import { connectDB } from "./src/config/db.js";
 import userRouter from "./src/routes/userRoute.js";
 import restaurantRouter from "./src/routes/restaurantRoute.js";
 import categoryRouter from "./src/routes/categoryRoute.js";
+import foodRouter from "./src/routes/foodRoute.js";
 
 // DB Connection
 connectDB();
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 app.use(userRouter);
 app.use(restaurantRouter);
 app.use(categoryRouter);
+app.use(foodRouter);
 
 // PORT - Parse the PORT as a number
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000; // parseInt also works
