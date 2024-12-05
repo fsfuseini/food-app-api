@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { createFood, getAllFoods, getSingleFood, updateFood, deleteFood } from "../conttrollers/foodController.js";
+import { createFood, getAllFoods, getSingleFood, updateFood, deleteFood, placeOrder, orderStatus } from "../conttrollers/foodController.js";
+import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 // Create a router instance
 const foodRouter = Router();
@@ -20,5 +21,15 @@ foodRouter.put("/food/update/:id", authMiddleware, updateFood);
 
 // Delete a food
 foodRouter.delete("/food/delete/:id", authMiddleware, deleteFood);
+
+// Place an order
+foodRouter.post("/food/placeorder", authMiddleware, placeOrder);
+
+// Order Status
+foodRouter.post("/food/orderstatus/:id", authMiddleware, adminMiddleware, orderStatus);
+
+
+
+
 // Export the router
 export default foodRouter;

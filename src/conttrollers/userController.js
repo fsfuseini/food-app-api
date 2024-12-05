@@ -70,7 +70,7 @@ export const loginUser = async (req, res) => {
     }
     // Create token
     const token = jwt.sign({ id: user._id }, process.env.JWT_KEY, {
-      expiresIn: "24hr",
+      expiresIn: "7d",
     });
     user.password = undefined;
     res.status(200).send({
