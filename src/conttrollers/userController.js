@@ -131,7 +131,7 @@ export const updateUserInfo = async (req, res) => {
       });
     }
     // Update user
-    const { userName, address, phone } = req.body;
+    const { userName, address, phone, role } = req.body;
     if (userName) {
       user.userName = userName;
     }
@@ -140,6 +140,9 @@ export const updateUserInfo = async (req, res) => {
     }
     if (phone) {
       user.phone = phone;
+    }
+    if (role) {
+      user.role = role;
     }
     await user.save();
     res.status(200).send({
